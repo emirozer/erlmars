@@ -1,0 +1,3 @@
+:name "erlmars"
+:node-sname "erlmarsdev"
+:lib-dirs '("_build/default/lib")
