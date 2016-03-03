@@ -165,12 +165,14 @@ do_task()->
     PotentialEntry = [TerrestrialDate, Sol, Ls, Min_Temp, Min_Temp_Fahrenheit, Max_Temp, Max_Temp_Fahrenheit, 
                       Pressure,Pressure_String, Abs_Humidity, Wind_Speed, Wind_Direction, Atmo_Opacity, Season,
                      Sunrise, Sunset],
-
-    {ok, C}  = epgsql:connect("localhost", "mars", "erlmarspg", [
-                                                                 {database, "erlmars"},
-                                                                 {port, 5432},
-                                                                 {timeout, 4000}
-                                                                ]),
+    PgUser = os:getenv("PGUSER"),
+    PgPass = os:getenv("PGPASS"),
+    PgDbName = os:getenv("PGDBNAME"),
+    {ok, C}  = epgsql:connect("localhost", PgUser, PgPass, 
+                              [{database, PgDbName},
+                               {port, 5432},
+                               {timeout, 4000}
+                              ]),
     
     SelectRes = epgsql:squery(C, "SELECT * FROM mars_weather ORDER BY terrestrial_date DESC LIMIT 1;"),
     
@@ -200,8 +202,6 @@ eval_latest_entry(A, A, C, PotentialEntry) ->
 eval_latest_entry(A, B, C, PotentialEntry) ->
     lager:info("New data entry detected, inserting to pg"),
     build_insert_query(C, PotentialEntry).                    
-
-
 
 appendWithTail(BeginningQuery ,List) when length(List) > 1 ->
     [Head | Tail] = List,
