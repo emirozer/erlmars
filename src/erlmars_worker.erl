@@ -188,15 +188,32 @@ response_body({ok, { _, _, Body}}) -> Body.
 
 build_insert_query(C, PotentialEntry)->
     Query = "INSERT INTO mars_weather VALUES (",
-    Result = string:join(PotentialEntry, ", "),
-    erlang:display(Result),
+    ProcessedQ = appendWithTail(Query, PotentialEntry),
     ClosingQuery =  ");",
-    FinalQuery = Query ++ Result ++ ClosingQuery.
+    Final = ProcessedQ ++ ClosingQuery,
+    erlang:display(Final).
     %InsertRes = epgsql:squery(C, FinalQuery).
 
 eval_latest_entry(A, A, C, PotentialEntry) ->
     lager:info("latest entry terrestrial_date is the latest API response!");
 eval_latest_entry(A, B, C, PotentialEntry) ->
     lager:info("New data entry detected, inserting to pg"),
-    build_insert_query(C, PotentialEntry).
-                                   
+    build_insert_query(C, PotentialEntry).                    
+
+
+appendWithTail(BeginningQuery ,List)  when length(List) == 1 ->
+    LastElement = element(1, List),
+    New = BeginningQuery ++ binary_to_list(LastElement),
+    New;
+appendWithTail(BeginningQuery ,List) when length(List) > 1 ->
+    [Head | Tail] = List,
+    erlang:display(BeginningQuery),
+    erlang:display(Head),
+    if 
+        is_atom(Head) == true ->  New = BeginningQuery ++ atom_to_list(Head) ++ ", ";
+        is_binary(Head) == true ->  New = BeginningQuery ++ binary_to_list(Head) ++ ", ";
+        is_integer(Head) == true -> New = BeginningQuery ++ integer_to_list(Head) ++ ", ";
+        is_float(Head) == true ->  New = BeginningQuery ++float_to_list(Head,[{decimals,2}]) ++ ", ";
+        true ->  New = BeginningQuery ++ Head ++ ", "
+    end,
+    appendWithTail(New, Tail).
