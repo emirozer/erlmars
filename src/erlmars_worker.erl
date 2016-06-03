@@ -168,7 +168,8 @@ do_task()->
     PgUser = os:getenv("PGUSER"),
     PgPass = os:getenv("PGPASS"),
     PgDbName = os:getenv("PGDBNAME"),
-    {ok, C}  = epgsql:connect("localhost", PgUser, PgPass, 
+    PgUrl = os:getenv("PGURL"),
+    {ok, C}  = epgsql:connect(PgUrl, PgUser, PgPass, 
                               [{database, PgDbName},
                                {port, 5432},
                                {timeout, 4000}
@@ -213,7 +214,12 @@ appendWithTail(BeginningQuery ,List) when length(List) > 1 ->
         true ->  New = BeginningQuery ++ "'" ++Head++ "'"++ ", "
     end,
     appendWithTail(New, Tail);
+
 appendWithTail(BeginningQuery ,List)  when length(List) == 1 ->
     [Head | _] = List,
     New = BeginningQuery ++ "'" ++binary_to_list(Head)++"'",
     New.
+
+fetch_mars_weather_data(C) ->
+    Query = "SELECT * FROM mars_weather ORDER BY terrestrial_date DESC LIMIT 30;",
+    SelectRes = epgsql:squery(C, Query).
