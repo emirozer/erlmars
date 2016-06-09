@@ -1,10 +1,17 @@
-Project Skeleton for the erlmars app.
+####erlmars
 
-You should find in this directory:
+This is a basic application that i wrote while i was learning erlang.
 
-README : this file
-Makefile : simple make commands
-rebar.config : configuration for Rebar3
+It will do scheduled runs to fetch mars weather data and aggregate it in a postgresql database.
+
+This app requires a couple of env vars:
+
+ - PGUSER, PGPASS, PGDBNAME, PGURL (postgresql configuration vars)
+
+The logs of the app will be served under /var/log/erlmars
+
+
+```
 /src
   /erlmars.app.src : application information file for OTP
   /erlmars_app.erl : base module for the Erlang application behavior
@@ -13,16 +20,16 @@ rebar.config : configuration for Rebar3
   /erlmars_resource.erl : a simple example Webmachine resource
 /priv
   /www : a convenient place to put your static web content
+```
 
-You probably want to do one of a couple of things at this point:
 
-### Build the skeleton application:
+### Build the application:
 
 ```
 $ rebar3 compile
 ```
 
-### Start up the skeleton application:
+### Start up the application:
 ```
 $ rebar3 release
 ...
@@ -52,5 +59,3 @@ your files on the fly, but you'll have to use the dev profile:
 ```
 $ rebar3 as dev shell
 ```
-
-
