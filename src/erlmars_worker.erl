@@ -187,6 +187,7 @@ do_task()->
     ok = epgsql:close(C),
     inets:stop().
     
+% unpacking the http resp
 response_body({ok, { _, _, Body}}) -> Body.
 
 build_insert_query(C, PotentialEntry)->
